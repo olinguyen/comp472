@@ -28,7 +28,7 @@ def print_board(board):
 
         #print the board values, and cell dividers
         for j in range(8):
-            if board[i][j] == -1:
+            if board[i][j] == 0:
                 print ' ',
             else:
                 print board[i][j],
