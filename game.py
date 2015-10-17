@@ -101,3 +101,8 @@ class Bird(Player):
     """
     def __init__(self, x, y):
         Player.__init__(self, x, y)
+
+class Coordinates:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
