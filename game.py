@@ -2,22 +2,48 @@
 The logic behind how the Hungry Birds world works.
 """
 import string
+from util import ConvertToIndex
 
 
 class Game:
     def __init__(self):
         self.board = Board()
+        self.larvaTurn = True
 
     def start(self):
         while not self.isOver():
-            pass
+            self.board.display()
+            self.playRound()
+            self.larvaTurn = not self.larvaTurn
         self.end()
+
+    def playRound(self):
+        if self.larvaTurn:
+            print "Larva turn"
+        else:
+            print "Bird Turn"
+
+        src_coordinates, dst_coordinates = self.readCommand()
+        agent = self.board.findAgent(src_coordinates)
+        print agent
+        #self.board.validateMove(self.larvaTurn, src_coordinates, dst_coordinates)
+        agent.move(dst_coordinates)
+
+    def readCommand(self):
+    	"""
+    	Processes the command used to run the game from command line
+    	"""
+        cmd = raw_input("Enter move")
+        src, dst = cmd.split(' ')
+        src_coordinates = ConvertToIndex(src)
+        dst_coordinates = ConvertToIndex(dst)
+        return src_coordinates, dst_coordinates
 
     def end(self):
         pass
 
     def isOver(self):
-        pass
+        return False
 
 class Board:
     """
@@ -31,10 +57,18 @@ class Board:
             self.agents.append(Bird(7, i))
         self.board = self.create(self.agents)
 
-    def findAgent(self, src_coords, dest_coords):
+    def validateMove():
+        pass
+
+    def findAgent(self, coordinates):
+        """
+        Returns the Agent object given coordinates
+        """
         for agent in self.agents:
-            if agent.x == src.coords.x and agent.y == dest_coords.y:
+            x, y = agent.getPosition()
+            if x == coordinates.x and y == coordinates.y:
                 return agent
+        return None
 
     def create(self, agents):
         """
@@ -46,22 +80,20 @@ class Board:
             for j in range(self.N):
                 board_row.append(' ')
             board.append(board_row)
-        for agent in self.agents:
-            x, y = agent.get_position()
-            if agent.__class__ == Larva:
-                board[x][y] = 'L'
-            elif agent.__class__ == Bird:
-                board[x][y] = 'B'
-            else:
-                raise Exception('Invalid agent type')
         return board
 
     def display(self):
         """
         Prints the game board
         """
-
-        print "The board look like this: \n"
+        for agent in self.agents:
+            x, y = agent.getPosition()
+            if agent.__class__ == Larva:
+                self.board[x][y] = 'L'
+            elif agent.__class__ == Bird:
+                self.board[x][y] = 'B'
+            else:
+                raise Exception('Invalid agent type')
 
         #print the horizontal numbers
         print " ",
@@ -96,19 +128,20 @@ class Board:
             else:
                 print
 
+
 class Agent(object):
     """
     Class for the larva player
     """
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        coordinates = Coordinates(x, y)
+        self.coordinates = coordinates
 
-    def move(self, pos):
-        pass
+    def move(self, coordinates):
+        self.coordinates = coordinates
 
-    def get_position(self):
-        return self.x, self.y
+    def getPosition(self):
+        return self.coordinates.x, self.coordinates.y
 
 class Larva(Agent):
     """
