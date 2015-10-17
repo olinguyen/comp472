@@ -9,11 +9,6 @@ import time
 import random
 import os
 
-def readCommand(argv):
-	"""
-	Processes the command used to run the game from command line
-	"""
-	command = raw_input(">> ")
 
 def runGame():
 	pass

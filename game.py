@@ -55,7 +55,6 @@ class Board:
         self.agents.append(Larva(6, 3))
         for i in range(0, 8, 2):
             self.agents.append(Bird(7, i))
-        self.board = self.create(self.agents)
 
     def validateMove():
         pass
@@ -70,9 +69,9 @@ class Board:
                 return agent
         return None
 
-    def create(self, agents):
+    def display(self):
         """
-        Creates the board
+        Prints the game board
         """
         board = []
         for i in range(self.N):
@@ -80,18 +79,13 @@ class Board:
             for j in range(self.N):
                 board_row.append(' ')
             board.append(board_row)
-        return board
 
-    def display(self):
-        """
-        Prints the game board
-        """
         for agent in self.agents:
             x, y = agent.getPosition()
             if agent.__class__ == Larva:
-                self.board[x][y] = 'L'
+                board[x][y] = 'L'
             elif agent.__class__ == Bird:
-                self.board[x][y] = 'B'
+                board[x][y] = 'B'
             else:
                 raise Exception('Invalid agent type')
 
@@ -112,10 +106,10 @@ class Board:
 
             #print the board values, and cell dividers
             for j in range(self.N):
-                if self.board[i][j] == '':
+                if board[i][j] == '':
                     print ' ',
                 else:
-                    print self.board[i][j],
+                    print board[i][j],
 
                 if j != self.N:
                     print " | ",
