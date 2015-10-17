@@ -1,7 +1,6 @@
 """
 Useful data structures for implementing search algorithms.
 """
-
 import game
 
 def ConvertToIndex(stringCoodinates):
