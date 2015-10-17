@@ -1,9 +1,23 @@
 """
 The logic behind how the Hungry Birds world works.
-TODO: Create board class?
 """
 import string
 
+
+class Game:
+    def __init__(self):
+        self.board = Board()
+
+    def start(self):
+        while not self.isOver():
+            pass
+        self.end()
+
+    def end(self):
+        pass
+
+    def isOver(self):
+        pass
 
 class Board:
     """
@@ -11,27 +25,35 @@ class Board:
     """
     def __init__(self):
         self.N = 8;
-        self.players = []
-        self.players.append(Larva(6, 3))
+        self.agents = []
+        self.agents.append(Larva(6, 3))
         for i in range(0, 8, 2):
-            self.players.append(Bird(7, i))
-        self.board = self.create(self.players)
+            self.agents.append(Bird(7, i))
+        self.board = self.create(self.agents)
 
-    def create(self, players):
+    def findAgent(self, src_coords, dest_coords):
+        for agent in self.agents:
+            if agent.x == src.coords.x and agent.y == dest_coords.y:
+                return agent
+
+    def create(self, agents):
+        """
+        Creates the board
+        """
         board = []
         for i in range(self.N):
             board_row = []
             for j in range(self.N):
                 board_row.append(' ')
             board.append(board_row)
-        for player in self.players:
-            x, y = player.get_position()
-            if player.__class__ == Larva:
+        for agent in self.agents:
+            x, y = agent.get_position()
+            if agent.__class__ == Larva:
                 board[x][y] = 'L'
-            elif player.__class__ == Bird:
+            elif agent.__class__ == Bird:
                 board[x][y] = 'B'
             else:
-                raise Exception('Invalid player type')
+                raise Exception('Invalid agent type')
         return board
 
     def display(self):
@@ -74,7 +96,7 @@ class Board:
             else:
                 print
 
-class Player(object):
+class Agent(object):
     """
     Class for the larva player
     """
@@ -88,19 +110,19 @@ class Player(object):
     def get_position(self):
         return self.x, self.y
 
-class Larva(Player):
+class Larva(Agent):
     """
     Class for the larva player
     """
     def __init__(self, x, y):
-        Player.__init__(self, x, y)
+        Agent.__init__(self, x, y)
 
-class Bird(Player):
+class Bird(Agent):
     """
     Class for bird player
     """
     def __init__(self, x, y):
-        Player.__init__(self, x, y)
+        Agent.__init__(self, x, y)
 
 class Coordinates:
     def __init__(self, x, y):
