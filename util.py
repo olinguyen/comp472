@@ -6,9 +6,11 @@ import game
 def ConvertToIndex(stringCoodinates):
     """For converting coordinate notation into array index."""
     stringCoodinates = stringCoodinates.lower()
+    '''
     if not(97 <= ord(stringCoodinates[0]) <= 104 \
     and 1 <= int(stringCoodinates[1]) <= 8):
         raise Exception("Out of Bounds")
+    '''
     y = ord(stringCoodinates[0]) - 97
     x = 7 - (int(stringCoodinates[1]) - 1)
     return game.Coordinates(x, y)

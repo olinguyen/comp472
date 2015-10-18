@@ -8,10 +8,12 @@ import types
 import time
 import random
 import os
+from game import Game
 
 
 def runGame():
-	pass
+	newGame = Game()
+	newGame.start()
 
 if __name__ == '__main__':
 	"""
@@ -23,3 +25,5 @@ if __name__ == '__main__':
 	See the usage string for more details
 	> python hungrybirds.py --help
 	"""
+
+	runGame()
