@@ -79,7 +79,7 @@ class Game:
 
         if not (agent.__class__ == Larva and self.larvaTurn or \
             agent.__class__ == Bird and not self.larvaTurn):
-            print "Wrong turn! The turn is for player " + agent.name
+            print "Wrong turn!"
             return False
         else:
             for move in valid_moves:
