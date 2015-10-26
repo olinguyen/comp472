@@ -104,12 +104,7 @@ class Game:
         noMoreMoves = True
         for agent in self.board.agents:
             if agent.isLarva == isLarva:
-                possible_moves = []
-                valid_moves = agent.getValidMoves()
-                for move in valid_moves:
-                    if self.board.isPositionAvailable(move):
-                        possible_moves.append(move)
-                if possible_moves:
+                if self.board.getPossibleMoves(agent):
                     noMoreMoves = False
         return noMoreMoves
 
@@ -130,7 +125,7 @@ class Game:
 
         # Birds win if Larva cannot move
         if self.isNoRemainingMoves(True):
-            print "Game Over! Bird wins"
+            print "Game Over! Birds win"
             return True
 
         return False
@@ -145,6 +140,17 @@ class Board:
         self.agents.append(Larva(6, 3))
         for i in range(0, 8, 2):
             self.agents.append(Bird(7, i))
+
+    def getPossibleMoves(self, agent):
+        """
+        Returns list of moves that are valid and available
+        """
+        possible_moves = []
+        valid_moves = agent.getValidMoves()
+        for move in valid_moves:
+            if self.isPositionAvailable(move):
+                possible_moves.append(move)
+        return possible_moves
 
     def isPositionAvailable(self, coordinates):
         """
