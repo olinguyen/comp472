@@ -4,7 +4,6 @@ The logic behind how the Hungry Birds world works.
 import string
 from util import ConvertToIndex
 
-
 class Game:
     def __init__(self):
         self.board = Board()
@@ -28,13 +27,17 @@ class Game:
             print "Bird Turn"
 
         while True:  # Loop until valid move
-            src_coordinates, dst_coordinates = self.readCommand()
-            if src_coordinates and self.validateMove(src_coordinates, dst_coordinates):
-                print 'Valid move made'
+            try:
+                src_coordinates, dst_coordinates = self.readCommand()
+            except:
+                print "Invalid input\n", "Please try again"
+                continue
+            if self.validateMove(src_coordinates, dst_coordinates):
+                print "Valid move made"
+                self.currentAgent.move(dst_coordinates)
                 break
-            print 'Invalid move made'
-
-        self.currentAgent.move(dst_coordinates)
+            else:
+                print "Please try again"
 
     def readCommand(self):
     	"""
@@ -43,76 +46,94 @@ class Game:
         cmd = raw_input("Enter move >> ")
 
         if cmd is None or not ' ' in cmd:
-            return None, None
+            raise Exception("Improper format")
 
         command_string = cmd.split(' ')
         src = command_string[0]
         dst = command_string[1]
-        try:
-            src_coordinates = ConvertToIndex(src)
-            dst_coordinates = ConvertToIndex(dst)
-        except:
-            return None, None
-        return src_coordinates, dst_coordinates
+        src_coordinates = ConvertToIndex(src)
+        dst_coordinates = ConvertToIndex(dst)
 
-    def isPositionAvailable(self, coordinates):
-        """
-        Check if theres not already an agent there
-        """
-        for agent in self.board.agents:
-            x, y = agent.getPosition()
-            if x == coordinates.x and y == coordinates.y:
-                return False
-        return True
+        return src_coordinates, dst_coordinates
 
     def validateMove(self, src_coordinates, dst_coordinates):
         """
         Verify correct player's turn, and valid moves
         """
-        agent = self.board.findAgent(src_coordinates)
+        # Ensure coordinates are not null
+        if src_coordinates == None or dst_coordinates == None:
+            print "Invalid coordinates"
+            return False
 
+        # Ensure source coordinates are non-empty
+        agent = self.board.findAgent(src_coordinates)
         if agent is None:
             print "Could not find agent at given coordinates"
             return False
-        self.currentAgent = agent
-        valid_moves = agent.getValidMoves()
 
-        if not (agent.__class__ == Larva and self.larvaTurn or \
-            agent.__class__ == Bird and not self.larvaTurn):
+        # Ensure that turns are respected
+        if not (agent.isLarva and self.larvaTurn or \
+            not agent.isLarva == Bird and not self.larvaTurn):
             print "Wrong turn!"
             return False
-        else:
-            for move in valid_moves:
-                # If valid move == desired location
-                if move.x == dst_coordinates.x and move.y == dst_coordinates.y:
-                    return self.isPositionAvailable(move)
-        return False
+
+        # Ensure that destination is valid
+        self.currentAgent = agent
+        valid_moves = agent.getValidMoves()
+        isValid = False
+        for move in valid_moves:
+            if move.x == dst_coordinates.x and move.y == dst_coordinates.y:
+                isValid = True
+        if not isValid:
+            print "Destination is not valid"
+            return False
+
+        # Ensure that the destination is non-empty
+        move = Coordinates(dst_coordinates.x, dst_coordinates.y)
+        if not self.board.isPositionAvailable(move):
+            print "Destination is a non-empty position"
+            return False
+
+        return True
 
     def end(self):
         self.board.display()
+        print "Thank you for playing!"
+
+    def isNoRemainingMoves(self, isLarva):
+        noMoreMoves = True
+        for agent in self.board.agents:
+            if agent.isLarva == isLarva:
+                possible_moves = []
+                valid_moves = agent.getValidMoves()
+                for move in valid_moves:
+                    if self.board.isPositionAvailable(move):
+                        possible_moves.append(move)
+                if possible_moves:
+                    noMoreMoves = False
+        return noMoreMoves
 
     def isOver(self):
+        """
+        Method to determine if game is over
+        """
+        # Larva wins if Larva is found on the bottom rank
         x, y = self.currentAgent.getPosition()
-        if self.currentAgent.__class__ == Larva and x == 7:
+        if self.currentAgent.isLarva and x == 7:
             print "Game Over! Larva wins"
             return True
 
-        noMoreMoves = True
-        for agent in self.board.agents:
-            valid_moves = agent.getValidMoves()
-
-            if agent.getValidMoves() and agent.__class__ == Bird:
-                noMoreMoves = False
-            if valid_moves and agent.__class__ == Larva:
-                for move in valid_moves:
-                    if self.isPositionAvailable(move):
-                        return False
-                print "Game Over! Bird wins"
-                return True
-
-        if noMoreMoves:
+        # Larva wins if Birds cannot move
+        if self.isNoRemainingMoves(False):
             print 'Game Over! Larva wins'
-        return noMoreMoves
+            return True
+
+        # Birds win if Larva cannot move
+        if self.isNoRemainingMoves(True):
+            print "Game Over! Bird wins"
+            return True
+
+        return False
 
 class Board:
     """
@@ -124,6 +145,16 @@ class Board:
         self.agents.append(Larva(6, 3))
         for i in range(0, 8, 2):
             self.agents.append(Bird(7, i))
+
+    def isPositionAvailable(self, coordinates):
+        """
+        Check if theres not already an agent there
+        """
+        for agent in self.agents:
+            x, y = agent.getPosition()
+            if x == coordinates.x and y == coordinates.y:
+                return False
+        return True
 
     def findAgent(self, coordinates):
         """
@@ -148,9 +179,9 @@ class Board:
 
         for agent in self.agents:
             x, y = agent.getPosition()
-            if agent.__class__ == Larva:
+            if agent.isLarva:
                 board[x][y] = 'L'
-            elif agent.__class__ == Bird:
+            elif not agent.isLarva:
                 board[x][y] = 'B'
             else:
                 raise Exception('Invalid agent type')
@@ -192,8 +223,10 @@ class Agent(object):
     """
     Class for the agent
     """
-    def __init__(self, x, y):
+    def __init__(self, x, y, name, isLarva):
         self.coordinates = Coordinates(x, y)
+        self.name = name
+        self.isLarva = isLarva
 
     def move(self, coordinates):
         self.coordinates = coordinates
@@ -206,8 +239,7 @@ class Larva(Agent):
     Class for the larva agent
     """
     def __init__(self, x, y):
-        self.name = "Larva"
-        Agent.__init__(self, x, y)
+        Agent.__init__(self, x, y, "Larva", True)
 
     def getValidMoves(self):
         x, y = self.getPosition()
@@ -227,8 +259,7 @@ class Bird(Agent):
     Class for bird agent
     """
     def __init__(self, x, y):
-        self.name = "Bird"
-        Agent.__init__(self, x, y)
+        Agent.__init__(self, x, y, "Bird", False)
 
     def getValidMoves(self):
         x, y = self.getPosition()
