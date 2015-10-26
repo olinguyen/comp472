@@ -98,6 +98,10 @@ class Game:
 
     def end(self):
         self.board.display()
+        if self.larvaTurn:
+            print "Game Over! Bird wins"
+        else:
+            print "Game Over! Larva wins"
         print "Thank you for playing!"
 
     def isNoRemainingMoves(self, isLarvaTurn):
@@ -118,21 +122,10 @@ class Game:
         # Larva wins if Larva is found on the bottom rank
         x, y = self.currentAgent.getPosition()
         if isinstance(self.currentAgent, Larva) and x == 7:
-            print "Game Over! Larva wins"
             return True
 
         # Check if the current player still has moves
-        noMoreMoves = self.isNoRemainingMoves(self.larvaTurn)
-
-        if noMoreMoves and self.larvaTurn:
-            print "Game Over! Birds win"
-            return True
-
-        if noMoreMoves and not self.larvaTurn:
-            print 'Game Over! Larva wins'
-            return True
-
-        return False
+        return self.isNoRemainingMoves(self.larvaTurn)
 
 class Board:
     """
