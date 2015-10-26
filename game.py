@@ -14,9 +14,9 @@ class Game:
         while True:
             self.board.display()
             self.playRound()
+            self.larvaTurn = not self.larvaTurn
             if self.isOver():
                 break
-            self.larvaTurn = not self.larvaTurn
 
         self.end()
 
@@ -72,8 +72,8 @@ class Game:
             return False
 
         # Ensure that turns are respected
-        if not (agent.isLarva and self.larvaTurn or \
-            not agent.isLarva == Bird and not self.larvaTurn):
+        if not (isinstance(agent, Larva) and self.larvaTurn or \
+            isinstance(agent, Bird) and not self.larvaTurn):
             print "Wrong turn!"
             return False
 
@@ -100,10 +100,13 @@ class Game:
         self.board.display()
         print "Thank you for playing!"
 
-    def isNoRemainingMoves(self, isLarva):
+    def isNoRemainingMoves(self, isLarvaTurn):
         noMoreMoves = True
         for agent in self.board.agents:
-            if agent.isLarva == isLarva:
+            if isinstance(agent, Larva) and isLarvaTurn:
+                if self.board.getPossibleMoves(agent):
+                    noMoreMoves = False
+            elif isinstance(agent, Bird) and not isLarvaTurn:
                 if self.board.getPossibleMoves(agent):
                     noMoreMoves = False
         return noMoreMoves
@@ -114,18 +117,19 @@ class Game:
         """
         # Larva wins if Larva is found on the bottom rank
         x, y = self.currentAgent.getPosition()
-        if self.currentAgent.isLarva and x == 7:
+        if isinstance(self.currentAgent, Larva) and x == 7:
             print "Game Over! Larva wins"
             return True
 
-        # Larva wins if Birds cannot move
-        if self.isNoRemainingMoves(False):
-            print 'Game Over! Larva wins'
+        # Check if the current player still has moves
+        noMoreMoves = self.isNoRemainingMoves(self.larvaTurn)
+
+        if noMoreMoves and self.larvaTurn:
+            print "Game Over! Birds win"
             return True
 
-        # Birds win if Larva cannot move
-        if self.isNoRemainingMoves(True):
-            print "Game Over! Birds win"
+        if noMoreMoves and not self.larvaTurn:
+            print 'Game Over! Larva wins'
             return True
 
         return False
@@ -185,9 +189,9 @@ class Board:
 
         for agent in self.agents:
             x, y = agent.getPosition()
-            if agent.isLarva:
+            if isinstance(agent, Larva):
                 board[x][y] = 'L'
-            elif not agent.isLarva:
+            elif isinstance(agent, Bird):
                 board[x][y] = 'B'
             else:
                 raise Exception('Invalid agent type')
@@ -229,10 +233,9 @@ class Agent(object):
     """
     Class for the agent
     """
-    def __init__(self, x, y, name, isLarva):
+    def __init__(self, x, y, name):
         self.coordinates = Coordinates(x, y)
         self.name = name
-        self.isLarva = isLarva
 
     def move(self, coordinates):
         self.coordinates = coordinates
@@ -245,7 +248,7 @@ class Larva(Agent):
     Class for the larva agent
     """
     def __init__(self, x, y):
-        Agent.__init__(self, x, y, "Larva", True)
+        Agent.__init__(self, x, y, "Larva")
 
     def getValidMoves(self):
         x, y = self.getPosition()
@@ -265,7 +268,7 @@ class Bird(Agent):
     Class for bird agent
     """
     def __init__(self, x, y):
-        Agent.__init__(self, x, y, "Bird", False)
+        Agent.__init__(self, x, y, "Bird")
 
     def getValidMoves(self):
         x, y = self.getPosition()
