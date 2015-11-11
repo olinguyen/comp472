@@ -12,3 +12,7 @@ Starting position: the larva is placed on D2 and the birds on A1, C1, E1 and G1.
 The larva can move on empty positions diagonally forward or backwards by 1 square at a time. The birds can only move diagonally forward on an empty position, 1 square at a time.
 
 If the larva does not get to line 1 and cannot move, then the player playing as the larva loses and the game ends.
+
+## How to play
+
+> python hungrybirds.py

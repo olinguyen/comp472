@@ -1,7 +1,10 @@
 """
 Useful data structures for implementing search algorithms.
 """
-import game
+class Coordinates:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 def ConvertToIndex(stringCoodinates):
     """For converting coordinate notation into array index."""
@@ -11,4 +14,4 @@ def ConvertToIndex(stringCoodinates):
         raise Exception("Out of Bounds")
     y = ord(stringCoodinates[0]) - 97
     x = 7 - (int(stringCoodinates[1]) - 1)
-    return game.Coordinates(x, y)
+    return Coordinates(x, y)
