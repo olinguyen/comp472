@@ -1,4 +1,5 @@
 from util import Coordinates
+from util import getValue
 from agent import *
 import string
 
@@ -12,6 +13,18 @@ class Board:
         self.agents.append(Larva(6, 3))
         for i in range(0, 8, 2):
             self.agents.append(Bird(7, i))
+
+    def getBasicHeuristic(self):
+        value = 0
+        for agent in self.agents:
+            x, y = agent.getPosition()
+            if isinstance(agent, Larva):
+                value += getValue(x, y)
+            elif isinstance(agent, Bird):
+                value -= getValue(x, y)
+            else:
+                raise Exception('Invalid agent type')
+        return value
 
     def getPossibleMoves(self, agent):
         """

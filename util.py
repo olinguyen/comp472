@@ -15,3 +15,9 @@ def ConvertToIndex(stringCoodinates):
     y = ord(stringCoodinates[0]) - 97
     x = 7 - (int(stringCoodinates[1]) - 1)
     return Coordinates(x, y)
+
+def getValue(x, y):
+    """
+    Returns the value for a given position
+    """
+    return (y + 1) + (8 * x)
