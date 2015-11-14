@@ -9,10 +9,11 @@ import time
 import random
 import os
 from game import Game
+import argparse
 
 
-def runGame():
-	newGame = Game()
+def runGame(ai):
+	newGame = Game(ai)
 	newGame.start()
 
 if __name__ == '__main__':
@@ -25,5 +26,10 @@ if __name__ == '__main__':
 	See the usage string for more details
 	> python hungrybirds.py --help
 	"""
+	parser = argparse.ArgumentParser(description="Run the Hungry Birds game")
+	parser.add_argument('-ai', action='store_true', help='Set AI player. e.g. -ai bird')
 
-	runGame()
+	args = parser.parse_args()
+	ai = args.ai
+
+	runGame(ai)

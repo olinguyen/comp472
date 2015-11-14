@@ -4,17 +4,22 @@ The logic behind how the Hungry Birds world works.
 from util import *
 from agent import *
 from board import Board
+from copy import deepcopy
+from search import *
+import time
 
 class Game:
-    def __init__(self):
+    def __init__(self, turnAI=True):
         self.board = Board()
         self.larvaTurn = True
-        self.currentAgent = None
+        self.currentAgent = self.board.getLarva()
+        self.turnAI = turnAI
 
     def start(self):
         while True:
             self.board.display()
             self.playRound()
+
             self.larvaTurn = not self.larvaTurn
             if self.isOver():
                 break
@@ -27,18 +32,39 @@ class Game:
         else:
             print "Bird Turn"
 
-        while True:  # Loop until valid move
-            try:
-                src_coordinates, dst_coordinates = self.readCommand()
-            except:
-                print "Invalid input\n", "Please try again"
-                continue
-            if self.validateMove(src_coordinates, dst_coordinates):
-                print "Valid move made"
-                self.currentAgent.move(dst_coordinates)
-                break
-            else:
-                print "Please try again"
+        if self.turnAI:
+            """
+            AI makes a move
+            """
+            t1 = time.time()
+            tmp = deepcopy(self.board)
+            root = Node(tmp, None, self.larvaTurn, 0)
+            MiniMax(root)
+            src_coordinates, dst_coordinates = root.getBestMove()
+            t2 = time.time()
+
+            print "AI made a move in", t2 - t1, "seconds"
+
+            print src_coordinates.x, src_coordinates.y
+            print dst_coordinates.x, dst_coordinates.y
+            self.currentAgent = self.board.findAgent(src_coordinates)
+            self.currentAgent.move(dst_coordinates)
+            self.turnAI = False
+        else:
+            while True:  # Loop until valid move
+                try:
+                    src_coordinates, dst_coordinates = self.readCommand()
+                except:
+                    print "Invalid input\n", "Please try again"
+                    continue
+                if self.validateMove(src_coordinates, dst_coordinates):
+                    print "Valid move made"
+                    self.turnAI = True
+                    self.currentAgent.move(dst_coordinates)
+                    break
+                else:
+                    print "Please try again"
+
 
     def readCommand(self):
     	"""

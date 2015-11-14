@@ -14,6 +14,9 @@ class Agent(object):
     def getPosition(self):
         return self.coordinates.x, self.coordinates.y
 
+    def getCoordinates(self):
+        return self.coordinates
+
 class Larva(Agent):
     """
     Class for the larva agent

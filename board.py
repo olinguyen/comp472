@@ -14,6 +14,9 @@ class Board:
         for i in range(0, 8, 2):
             self.agents.append(Bird(7, i))
 
+    def getLarva(self):
+        return self.agents[0]
+
     def getBasicHeuristic(self):
         value = 0
         for agent in self.agents:
