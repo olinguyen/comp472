@@ -29,7 +29,10 @@ class Node:
         for i, agent in enumerate(agents):
             for move in self.board.getPossibleMoves(agent):
                 board = deepcopy(self.board)
-                board.agents[i].move(move)
+                if self.isMax:
+                    board.agents[i].move(move)
+                else:
+                    board.agents[i+1].move(move)
                 self.children.append(Node(board, self, not self.isMax, self.depth+1))
 
     def evaluateScore(self):
