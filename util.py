@@ -16,6 +16,11 @@ def ConvertToIndex(stringCoodinates):
     x = 7 - (int(stringCoodinates[1]) - 1)
     return Coordinates(x, y)
 
+def printIndex(coordinates):
+    y = chr(coordinates.y + 97)
+    x = 7 - coordinates.x + 1
+    print y.upper() + str(x),
+
 def getValue(x, y):
     """
     Returns the value for a given position

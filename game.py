@@ -45,8 +45,12 @@ class Game:
 
             print "AI made a move in", t2 - t1, "seconds"
 
-            print src_coordinates.x, src_coordinates.y
-            print dst_coordinates.x, dst_coordinates.y
+            printIndex(src_coordinates)
+            print '->',
+            printIndex(dst_coordinates)
+            print
+
+            print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
             self.turnAI = False

@@ -6,7 +6,7 @@ from agent import *
 """
 All search algorithms.
 """
-MAXDEPTH = 5
+MAXDEPTH = 3
 
 class Node:
     numberOfNodes = 0
@@ -89,3 +89,5 @@ def MiniMax(node):
             # print 'MinChildScore is ' + str(node.score)
     else:
         node.score = node.evaluateScore()
+
+    print "Depth: ", node.depth, ", Score: ", node.score
