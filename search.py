@@ -2,7 +2,6 @@ from board import Board
 from copy import copy
 from copy import deepcopy
 from agent import *
-import Queue
 
 """
 All search algorithms.
@@ -94,7 +93,7 @@ def MiniMax(node):
 
     # print "Depth: ", node.depth, ", Score: ", node.score
 
-def AlphaBetaPruning(node, depth, alpha, beta, out_q):
+def AlphaBetaPruning(node, depth, alpha, beta):
 
     if depth == MAXDEPTH:
         node.evaluateScore()
@@ -126,7 +125,5 @@ def AlphaBetaPruning(node, depth, alpha, beta, out_q):
 
     node.score = value
     # print "Depth = ", depth, "Score = ", node.score
-    if depth == 1:
-        out_q.put(value)
-        
+
     return value

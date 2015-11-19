@@ -56,10 +56,11 @@ class Game:
             # else:
             #     root.score = root.returnMaxChildScore
 
-            root.generateChildren()
-            children = root.children
-            p = Pool(len(children))
-
+            # root.generateChildren()
+            # children = root.children
+            # p = Pool(processes=len(children))
+            # childrenScores = [p.apply(AlphaBetaPruning, args=(child, 1, 999999, -999999,)) for child in children]
+            # print childrenScores
 
             AlphaBetaPruning(root, 0, 999999, -999999)
             # MiniMax(root)
