@@ -2,43 +2,102 @@ from board import Board
 from copy import copy
 from copy import deepcopy
 from agent import *
+from util import getValue
 
 """
 All search algorithms.
 """
-MAXDEPTH = 7
+MAXDEPTH = 8
 
 class Node:
     numberOfNodes = 0
-    def __init__(self, board, parent, isMax, depth):
+    def __init__(self, agents, parent, isMax, depth):
         self.score = None
         self.parent = parent
         self.children = []
         self.depth = depth
         self.isMax = isMax
-        self.board = board
-        self.score = Node.numberOfNodes
+        self.agents = agents
         Node.numberOfNodes += 1
         # print 'Depth with ' + str(self.depth) + ' created'
     def generateChildren(self):
         if self.isMax:
-            agents = [self.board.agents[0]]
+            agents = [self.agents[0]]
         else:
-            agents = self.board.agents[1:]
+            agents = self.agents[1:]
 
-        for i, agent in enumerate(agents):
-            for move in self.board.getPossibleMoves(agent):
-                board = deepcopy(self.board)
-                if self.isMax:
-                    board.agents[i].move(move)
-                    board.agents[i].hasMoved = True
-                else:
-                    board.agents[i+1].move(move)
-                    board.agents[i+1].hasMoved = True
-                self.children.append(Node(board, self, not self.isMax, self.depth+1))
+        # For each agent get all their valid moves
+        validMoves = self.GetValidMovesForAll(agents)
+
+        # Create children based on valid moves
+        if self.isMax:
+            for move in validMoves[0]:
+                copyAgent = self.agents[:]
+                copyAgent[0] = move
+                self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
+        else:
+            for i in range(4):
+                for move in validMoves[i]:
+                    copyAgent = self.agents[:]
+                    copyAgent[i] = move
+                    self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
+
+        #
+        # for index in range(0,len(agents),2):
+        #     for move in self.(agent):
+        #         # board = deepcopy(self.board)
+        #         board = Board()
+        #         # board.agents = map(copy, self.board.agents)
+        #         # board.agents = self.board.agents[:]
+        #         if self.isMax:
+        #             board.agents[i].move(move)
+        #         else:
+        #             board.agents[i+1].move(move)
+        #         self.children.append(Node(board, self, not self.isMax, self.depth+1))
+
+    def GetValidMovesForAll(self, agents):
+        """ Returns all valid moves for Larva or for each Bird """
+        # return list of lists containing valid moves for each agent
+        if len(agents) == 1:
+            # generate and return possible valid moves for larva
+            moves = []
+            x = agents[0][0]
+            y = agents[0][1]
+            if not [x - 1, y + 1] in self.agents:
+                moves.append([x - 1, y + 1])
+            if not [x - 1, y - 1] in self.agents:
+                moves.append([x - 1, y - 1])
+            if not [x + 1, y + 1] in self.agents:
+                moves.append([x + 1, y + 1])
+            if not [x + 1, y - 1] in self.agents:
+                moves.append([x + 1, y - 1])
+            return [moves]
+        else:
+            totalMoves = []
+            for i in range(4):
+                moves = []
+                x = agents[i][0]
+                y = agents[i][1]
+                if not [x - 1, y + 1] in self.agents:
+                    moves.append([x - 1, y + 1])
+                if not [x - 1, y - 1] in self.agents:
+                    moves.append([x - 1, y - 1])
+                totalMoves.append(moves)
+            return totalMoves
+        raise Exception("Invalid execution!!!")
 
     def evaluateScore(self):
-        self.score = self.board.getBasicHeuristic()
+        self.score = self.naiveHeuristic()
+
+    def naiveHeuristic(self):
+        value = 0
+        for i, agent in enumerate(self.agents):
+            x, y = agent[0], agent[1]
+            if i == 0:
+                value += getValue(x, y)
+            else:
+                value -= getValue(x, y)
+        return value
 
     def returnMinChildScore(self):
         mini = self.children[0].score
@@ -55,14 +114,22 @@ class Node:
         return maxi
 
     def getBestMove(self):
+        print [child.agents for child in self.children]
         for child in self.children:
             if child.score == self.score:
-                for index, agent in enumerate(self.board.agents):
-                    if self.board.agents[index].coordinates.x \
-                            != child.board.agents[index].coordinates.x:
-                        src_coordinates = self.board.agents[index].coordinates
-                        dst_coordinates = child.board.agents[index].coordinates
+                # print self.agents
+                # print child.agents
+                for i in range(5):
+                    if self.agents[i] != child.agents[i]:
+                        src_coordinates = Coordinates(self.agents[i][0], self.agents[i][1])
+                        dst_coordinates = Coordinates(child.agents[i][0], child.agents[i][1])
                         break
+                # for index, agent in enumerate(self.board.agents):
+                #     if self.board.agents[index].coordinates.x \
+                #             != child.board.agents[index].coordinates.x:
+                #         src_coordinates = self.board.agents[index].coordinates
+                #         dst_coordinates = child.board.agents[index].coordinates
+                #         break
         return src_coordinates, dst_coordinates
 
 def MiniMax(node):
@@ -125,5 +192,9 @@ def AlphaBetaPruning(node, depth, alpha, beta):
 
     node.score = value
     # print "Depth = ", depth, "Score = ", node.score
+
+    if node.depth == 1:
+        print "Value:"
+        print value
 
     return value

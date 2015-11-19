@@ -7,7 +7,6 @@ class Agent(object):
     def __init__(self, x, y, name):
         self.coordinates = Coordinates(x, y)
         self.name = name
-        self.hasMoved = False
 
     def move(self, coordinates):
         self.coordinates = coordinates

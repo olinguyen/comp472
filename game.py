@@ -6,7 +6,7 @@ from agent import *
 from board import Board
 from copy import deepcopy
 from search import *
-from multiprocessing import Pool
+import multiprocessing
 import time
 
 class Game:
@@ -37,36 +37,52 @@ class Game:
             """
             AI makes a move
             """
+            # import cProfile, pstats, StringIO
+            # pr = cProfile.Profile()
+            # pr.enable()
+
             t1 = time.time()
-            tmp = deepcopy(self.board)
-            root = Node(tmp, None, self.larvaTurn, 0)
+            # tmp = deepcopy(self.board)
+            agents = []
+            for agent in self.board.agents:
+                agents.append([agent.coordinates.x, agent.coordinates.y])
 
+            # print agents
+
+            root = Node(agents, None, self.larvaTurn, 0)
+
+            # jobs = []
             # root.generateChildren()
             # children = root.children
+            #
             # for child in children:
-            #     processList = []
-            #     for child in children:
-            #         p = mp.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
-            #         processList.append(p)
-            #         p.start()
-            #     for p in processList:
-            #         p.join()
+            #     p = multiprocessing.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
+            #     jobs.append(p)
+            #     p.start()
+            # for p in jobs:
+            #     p.join()
+            #
+            # print [child.score for child in children]
+            #
             # if root.isMax:
-            #     root.score = root.returnMaxChildScore
+            #     root.score = max([child.score for child in children])
             # else:
-            #     root.score = root.returnMaxChildScore
+            #     root.score = min([child.score for child in children])
 
-            # root.generateChildren()
-            # children = root.children
-            # p = Pool(processes=len(children))
-            # childrenScores = [p.apply(AlphaBetaPruning, args=(child, 1, 999999, -999999,)) for child in children]
-            # print childrenScores
 
-            AlphaBetaPruning(root, 0, 999999, -999999)
-            # MiniMax(root)
+
+            # AlphaBetaPruning(root, 0, 999999, -999999)
+            MiniMax(root)
             src_coordinates, dst_coordinates = root.getBestMove()
-            print src_coordinates, dst_coordinates
+            # print src_coordinates, dst_coordinates
             t2 = time.time()
+
+            # pr.disable()
+            # s = StringIO.StringIO()
+            # sortby = 'cumulative'
+            # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            # ps.print_stats()
+            # print s.getvalue()
 
             print "AI made a move in", t2 - t1, "seconds"
 

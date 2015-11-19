@@ -17,23 +17,6 @@ class Board:
     def getLarva(self):
         return self.agents[0]
 
-    def getBasicHeuristic(self):
-        value = 0
-        for agent in self.agents:
-            x, y = agent.getPosition()
-            if isinstance(agent, Larva):
-                if x == 7:
-                    value += 9999
-                elif not self.getPossibleMoves(agent):
-                    value += -9999
-                else:
-                    value += getValue(x, y)
-            elif isinstance(agent, Bird):
-                value -= getValue(x, y)
-            else:
-                raise Exception('Invalid agent type')
-        return value
-
     def getPossibleMoves(self, agent):
         """
         Returns list of moves that are valid and available
