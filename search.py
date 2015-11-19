@@ -2,11 +2,12 @@ from board import Board
 from copy import copy
 from copy import deepcopy
 from agent import *
+import Queue
 
 """
 All search algorithms.
 """
-MAXDEPTH = 3
+MAXDEPTH = 7
 
 class Node:
     numberOfNodes = 0
@@ -31,8 +32,10 @@ class Node:
                 board = deepcopy(self.board)
                 if self.isMax:
                     board.agents[i].move(move)
+                    board.agents[i].hasMoved = True
                 else:
                     board.agents[i+1].move(move)
+                    board.agents[i+1].hasMoved = True
                 self.children.append(Node(board, self, not self.isMax, self.depth+1))
 
     def evaluateScore(self):
@@ -61,7 +64,6 @@ class Node:
                         src_coordinates = self.board.agents[index].coordinates
                         dst_coordinates = child.board.agents[index].coordinates
                         break
-
         return src_coordinates, dst_coordinates
 
 def MiniMax(node):
@@ -90,4 +92,41 @@ def MiniMax(node):
     else:
         node.score = node.evaluateScore()
 
-    print "Depth: ", node.depth, ", Score: ", node.score
+    # print "Depth: ", node.depth, ", Score: ", node.score
+
+def AlphaBetaPruning(node, depth, alpha, beta, out_q):
+
+    if depth == MAXDEPTH:
+        node.evaluateScore()
+        # print "Depth = ", depth, "Score = ", node.score
+        return node.score
+
+    node.generateChildren()
+    children = node.children
+
+    if not children:
+        node.evaluateScore()
+        # print "Depth = ", depth, "Score = ", node.score
+        return node.score
+
+    if node.isMax:
+        value = -999999
+        for child in children:
+            value = AlphaBetaPruning(child, depth + 1, alpha, beta)
+            beta = max(value, beta)
+            if beta >= alpha:
+                break
+    else:
+        value = 999999
+        for child in children:
+            value = AlphaBetaPruning(child, depth + 1, alpha, beta)
+            alpha = min(value, alpha)
+            if beta >= alpha:
+                break
+
+    node.score = value
+    # print "Depth = ", depth, "Score = ", node.score
+    if depth == 1:
+        out_q.put(value)
+        
+    return value

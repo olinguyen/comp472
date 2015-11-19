@@ -22,7 +22,12 @@ class Board:
         for agent in self.agents:
             x, y = agent.getPosition()
             if isinstance(agent, Larva):
-                value += getValue(x, y)
+                if x == 7:
+                    value += 9999
+                elif not self.getPossibleMoves(agent):
+                    value += -9999
+                else:
+                    value += getValue(x, y)
             elif isinstance(agent, Bird):
                 value -= getValue(x, y)
             else:

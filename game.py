@@ -6,6 +6,7 @@ from agent import *
 from board import Board
 from copy import deepcopy
 from search import *
+from multiprocessing import Pool
 import time
 
 class Game:
@@ -39,8 +40,31 @@ class Game:
             t1 = time.time()
             tmp = deepcopy(self.board)
             root = Node(tmp, None, self.larvaTurn, 0)
-            MiniMax(root)
+
+            # root.generateChildren()
+            # children = root.children
+            # for child in children:
+            #     processList = []
+            #     for child in children:
+            #         p = mp.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
+            #         processList.append(p)
+            #         p.start()
+            #     for p in processList:
+            #         p.join()
+            # if root.isMax:
+            #     root.score = root.returnMaxChildScore
+            # else:
+            #     root.score = root.returnMaxChildScore
+
+            root.generateChildren()
+            children = root.children
+            p = Pool(len(children))
+
+
+            AlphaBetaPruning(root, 0, 999999, -999999)
+            # MiniMax(root)
             src_coordinates, dst_coordinates = root.getBestMove()
+            print src_coordinates, dst_coordinates
             t2 = time.time()
 
             print "AI made a move in", t2 - t1, "seconds"
