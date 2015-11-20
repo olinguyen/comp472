@@ -94,7 +94,7 @@ class Game:
             print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
-            self.turnAI = False
+            # self.turnAI = False
         else:
             while True:  # Loop until valid move
                 try:

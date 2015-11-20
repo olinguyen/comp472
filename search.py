@@ -29,6 +29,9 @@ class Node:
         # For each agent get all their valid moves
         validMoves = self.GetValidMovesForAll(agents)
 
+        if self.depth == 0:
+            print validMoves
+
         # Create children based on valid moves
         if self.isMax:
             for move in validMoves[0]:
@@ -38,8 +41,12 @@ class Node:
         else:
             for i in range(4):
                 for move in validMoves[i]:
+                    if self.depth == 0:
+                        print move
                     copyAgent = self.agents[:]
-                    copyAgent[i] = move
+                    copyAgent[i+1] = move
+                    if not move:
+                        print "noob mistake"
                     self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
 
         #
@@ -63,13 +70,13 @@ class Node:
             moves = []
             x = agents[0][0]
             y = agents[0][1]
-            if not [x - 1, y + 1] in self.agents:
+            if not [x - 1, y + 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y + 1 <= 7:
                 moves.append([x - 1, y + 1])
-            if not [x - 1, y - 1] in self.agents:
+            if not [x - 1, y - 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y - 1 <= 7:
                 moves.append([x - 1, y - 1])
-            if not [x + 1, y + 1] in self.agents:
+            if not [x + 1, y + 1] in self.agents and 0 <= x + 1 <= 7 and  0 <= y + 1 <= 7:
                 moves.append([x + 1, y + 1])
-            if not [x + 1, y - 1] in self.agents:
+            if not [x + 1, y - 1] in self.agents and 0 <= x + 1 <= 7 and  0 <= y - 1 <= 7:
                 moves.append([x + 1, y - 1])
             return [moves]
         else:
@@ -78,9 +85,9 @@ class Node:
                 moves = []
                 x = agents[i][0]
                 y = agents[i][1]
-                if not [x - 1, y + 1] in self.agents:
+                if not [x - 1, y + 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y + 1 <= 7:
                     moves.append([x - 1, y + 1])
-                if not [x - 1, y - 1] in self.agents:
+                if not [x - 1, y - 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y - 1 <= 7:
                     moves.append([x - 1, y - 1])
                 totalMoves.append(moves)
             return totalMoves
@@ -114,11 +121,15 @@ class Node:
         return maxi
 
     def getBestMove(self):
-        print [child.agents for child in self.children]
+        # print [child.agents for child in self.children]
+        zzz = 1
         for child in self.children:
+            print "For child ", zzz, ": "
+            print self.agents
+            print child.agents
+            zzz+=1
+            print
             if child.score == self.score:
-                # print self.agents
-                # print child.agents
                 for i in range(5):
                     if self.agents[i] != child.agents[i]:
                         src_coordinates = Coordinates(self.agents[i][0], self.agents[i][1])
