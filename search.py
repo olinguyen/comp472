@@ -19,6 +19,7 @@ class Node:
         self.isMax = isMax
         self.agents = agents
         Node.numberOfNodes += 1
+
     def generateChildren(self):
         if self.isMax:
             agents = [self.agents[0]]
@@ -26,9 +27,6 @@ class Node:
             agents = self.agents[1:]
 
         validMoves = self.GetValidMovesForAll(agents)
-
-        if self.depth == 0:
-            print validMoves
 
         if self.isMax:
             for move in validMoves[0]:
@@ -38,12 +36,8 @@ class Node:
         else:
             for i in range(4):
                 for move in validMoves[i]:
-                    if self.depth == 0:
-                        print move
                     copyAgent = self.agents[:]
                     copyAgent[i+1] = move
-                    if not move:
-                        print "noob mistake"
                     self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
 
     def GetValidMovesForAll(self, agents):
@@ -108,8 +102,8 @@ class Node:
             print "For child ", childNumber, ": "
             print self.agents
             print child.agents
-            childNumber+=1
             print
+            childNumber += 1
             if child.score == self.score:
                 for i in range(5):
                     if self.agents[i] != child.agents[i]:
@@ -118,11 +112,22 @@ class Node:
                         return src_coordinates, dst_coordinates
         raise Exception("Children with appropriate score not found")
 
+    def allChildrenScored(self):
+        for child in self.children:
+            if not child.score:
+                return False
+        return True
+
+
 def MiniMax(node):
     """
     Implementation of the minimax algorithm
     """
     node.generateChildren()
+
+    if not node.children:
+        node.evaluateScore()
+        return
 
     if node.depth != MAXDEPTH - 1:
         for child in node.children:
@@ -131,7 +136,7 @@ def MiniMax(node):
         for child in node.children:
             child.evaluateScore()
 
-    if node.children and node.children[0].score:
+    if node.children and node.allChildrenScored():
         if node.isMax:
             node.score = node.returnMaxChildScore()
         else:
@@ -140,6 +145,10 @@ def MiniMax(node):
         node.score = node.evaluateScore()
 
 def AlphaBetaPruning(node, depth, alpha, beta):
+
+    if node.agents[0][0] == 7:
+        node.score = 999999
+        return node.score
 
     if depth == MAXDEPTH:
         node.evaluateScore()
