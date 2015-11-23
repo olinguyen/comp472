@@ -48,32 +48,25 @@ class Game:
                 agents.append([agent.coordinates.x, agent.coordinates.y])
             root = Node(agents, None, self.larvaTurn, 0)
 
-            # jobs = []
-            # root.generateChildren()
-            # children = root.children
-            #
-            # for child in children:
-            #     p = multiprocessing.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
-            #     jobs.append(p)
-            #     p.start()
-            # for p in jobs:
-            #     p.join()
-            #
-            # print [child.score for child in children]
-            #
-            # if root.isMax:
-            #     root.score = max([child.score for child in children])
-            # else:
-            #     root.score = min([child.score for child in children])
+            jobs = []
+            root.generateChildren()
+            children = root.children
 
-            root.score = AlphaBetaPruning(root, 0, 999999, -999999)
+            for child in children:
+                p = multiprocessing.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
+                jobs.append(p)
+                p.start()
+            for p in jobs:
+                p.join()
 
-            for child in root.children:
-                print child.score,
-            print "\n", root.score
+            print [child.score for child in children]
 
-            print root.isMax
-            print root.score
+            if root.isMax:
+                root.score = max([child.score for child in children])
+            else:
+                root.score = min([child.score for child in children])
+
+            AlphaBetaPruning(root, 0, 999999, -999999)
             # MiniMax(root)
 
             src_coordinates, dst_coordinates = root.getBestMove()

@@ -19,20 +19,17 @@ class Node:
         self.isMax = isMax
         self.agents = agents
         Node.numberOfNodes += 1
-        # print 'Depth with ' + str(self.depth) + ' created'
     def generateChildren(self):
         if self.isMax:
             agents = [self.agents[0]]
         else:
             agents = self.agents[1:]
 
-        # For each agent get all their valid moves
         validMoves = self.GetValidMovesForAll(agents)
 
         if self.depth == 0:
             print validMoves
 
-        # Create children based on valid moves
         if self.isMax:
             for move in validMoves[0]:
                 copyAgent = self.agents[:]
@@ -49,24 +46,9 @@ class Node:
                         print "noob mistake"
                     self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
 
-        #
-        # for index in range(0,len(agents),2):
-        #     for move in self.(agent):
-        #         # board = deepcopy(self.board)
-        #         board = Board()
-        #         # board.agents = map(copy, self.board.agents)
-        #         # board.agents = self.board.agents[:]
-        #         if self.isMax:
-        #             board.agents[i].move(move)
-        #         else:
-        #             board.agents[i+1].move(move)
-        #         self.children.append(Node(board, self, not self.isMax, self.depth+1))
-
     def GetValidMovesForAll(self, agents):
         """ Returns all valid moves for Larva or for each Bird """
-        # return list of lists containing valid moves for each agent
         if len(agents) == 1:
-            # generate and return possible valid moves for larva
             moves = []
             x = agents[0][0]
             y = agents[0][1]
@@ -121,7 +103,6 @@ class Node:
         return maxi
 
     def getBestMove(self):
-        # print [child.agents for child in self.children]
         childNumber = 1
         for child in self.children:
             print "For child ", childNumber, ": "
@@ -135,21 +116,13 @@ class Node:
                         src_coordinates = Coordinates(self.agents[i][0], self.agents[i][1])
                         dst_coordinates = Coordinates(child.agents[i][0], child.agents[i][1])
                         return src_coordinates, dst_coordinates
-                # for index, agent in enumerate(self.board.agents):
-                #     if self.board.agents[index].coordinates.x \
-                #             != child.board.agents[index].coordinates.x:
-                #         src_coordinates = self.board.agents[index].coordinates
-                #         dst_coordinates = child.board.agents[index].coordinates
-                #         break
         raise Exception("Children with appropriate score not found")
 
 def MiniMax(node):
     """
     Implementation of the minimax algorithm
     """
-    # print '\nGenerating children...'
     node.generateChildren()
-    # print node.children[0].depth
 
     if node.depth != MAXDEPTH - 1:
         for child in node.children:
@@ -157,25 +130,19 @@ def MiniMax(node):
     else:
         for child in node.children:
             child.evaluateScore()
-            # print 'Child score is: ' + str(child.score)
 
     if node.children and node.children[0].score:
         if node.isMax:
             node.score = node.returnMaxChildScore()
-            # print 'MaxChildScore is ' + str(node.score)
         else:
             node.score = node.returnMinChildScore()
-            # print 'MinChildScore is ' + str(node.score)
     else:
         node.score = node.evaluateScore()
-
-    # print "Depth: ", node.depth, ", Score: ", node.score
 
 def AlphaBetaPruning(node, depth, alpha, beta):
 
     if depth == MAXDEPTH:
         node.evaluateScore()
-        # print "Depth = ", depth, "Score = ", node.score
         return node.score
 
     node.generateChildren()
