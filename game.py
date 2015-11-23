@@ -10,7 +10,7 @@ import multiprocessing
 import time
 
 class Game:
-    def __init__(self, turnAI=True):
+    def __init__(self, turnAI=False):
         self.board = Board()
         self.larvaTurn = True
         self.currentAgent = self.board.getLarva()
@@ -42,13 +42,10 @@ class Game:
             # pr.enable()
 
             t1 = time.time()
-            # tmp = deepcopy(self.board)
+
             agents = []
             for agent in self.board.agents:
                 agents.append([agent.coordinates.x, agent.coordinates.y])
-
-            # print agents
-
             root = Node(agents, None, self.larvaTurn, 0)
 
             # jobs = []
@@ -69,12 +66,17 @@ class Game:
             # else:
             #     root.score = min([child.score for child in children])
 
+            root.score = AlphaBetaPruning(root, 0, 999999, -999999)
 
+            for child in root.children:
+                print child.score,
+            print "\n", root.score
 
-            # AlphaBetaPruning(root, 0, 999999, -999999)
-            MiniMax(root)
+            print root.isMax
+            print root.score
+            # MiniMax(root)
+
             src_coordinates, dst_coordinates = root.getBestMove()
-            # print src_coordinates, dst_coordinates
             t2 = time.time()
 
             # pr.disable()
@@ -94,7 +96,7 @@ class Game:
             print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
-            # self.turnAI = False
+            self.turnAI = False
         else:
             while True:  # Loop until valid move
                 try:

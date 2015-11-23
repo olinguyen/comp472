@@ -7,7 +7,7 @@ from util import getValue
 """
 All search algorithms.
 """
-MAXDEPTH = 8
+MAXDEPTH = 6
 
 class Node:
     numberOfNodes = 0
@@ -122,26 +122,26 @@ class Node:
 
     def getBestMove(self):
         # print [child.agents for child in self.children]
-        zzz = 1
+        childNumber = 1
         for child in self.children:
-            print "For child ", zzz, ": "
+            print "For child ", childNumber, ": "
             print self.agents
             print child.agents
-            zzz+=1
+            childNumber+=1
             print
             if child.score == self.score:
                 for i in range(5):
                     if self.agents[i] != child.agents[i]:
                         src_coordinates = Coordinates(self.agents[i][0], self.agents[i][1])
                         dst_coordinates = Coordinates(child.agents[i][0], child.agents[i][1])
-                        break
+                        return src_coordinates, dst_coordinates
                 # for index, agent in enumerate(self.board.agents):
                 #     if self.board.agents[index].coordinates.x \
                 #             != child.board.agents[index].coordinates.x:
                 #         src_coordinates = self.board.agents[index].coordinates
                 #         dst_coordinates = child.board.agents[index].coordinates
                 #         break
-        return src_coordinates, dst_coordinates
+        raise Exception("Children with appropriate score not found")
 
 def MiniMax(node):
     """
@@ -183,29 +183,23 @@ def AlphaBetaPruning(node, depth, alpha, beta):
 
     if not children:
         node.evaluateScore()
-        # print "Depth = ", depth, "Score = ", node.score
         return node.score
 
     if node.isMax:
         value = -999999
         for child in children:
-            value = AlphaBetaPruning(child, depth + 1, alpha, beta)
+            value = max(value, AlphaBetaPruning(child, depth + 1, alpha, beta))
             beta = max(value, beta)
             if beta >= alpha:
                 break
+        node.score = value
+        return value
     else:
         value = 999999
         for child in children:
-            value = AlphaBetaPruning(child, depth + 1, alpha, beta)
+            value = min(value, AlphaBetaPruning(child, depth + 1, alpha, beta))
             alpha = min(value, alpha)
             if beta >= alpha:
                 break
-
-    node.score = value
-    # print "Depth = ", depth, "Score = ", node.score
-
-    if node.depth == 1:
-        print "Value:"
-        print value
-
-    return value
+        node.score = value
+        return value
