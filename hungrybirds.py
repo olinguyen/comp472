@@ -10,10 +10,11 @@ import random
 import os
 from game import Game
 import argparse
+from optparse import OptionParser
 
 
-def runGame(ai):
-	newGame = Game(ai)
+def runGame(ai, depth):
+	newGame = Game(ai, depth)
 	newGame.start()
 
 if __name__ == '__main__':
@@ -26,10 +27,12 @@ if __name__ == '__main__':
 	See the usage string for more details
 	> python hungrybirds.py --help
 	"""
-	parser = argparse.ArgumentParser(description="Run the Hungry Birds game")
-	parser.add_argument('-ai', action='store_true', help='Set AI player. e.g. -ai bird')
-
-	args = parser.parse_args()
-	ai = args.ai
-
-	runGame(ai)
+	parser = OptionParser()
+	parser.add_option('-l', '--larva_ai', action='store_true', default=False,
+						 help='Set AI player. e.g. -ai bird')
+	parser.add_option('-d', '--depth', type="int", default=6,
+						 help='Max depth that the minimax algorithm will go')
+	(options, args) = parser.parse_args()
+	depth = options.depth
+	ai = options.larva_ai
+	runGame(ai, depth)

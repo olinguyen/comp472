@@ -10,11 +10,12 @@ import multiprocessing
 import time
 
 class Game:
-    def __init__(self, turnAI=False):
+    def __init__(self, turnAI=False, depth=6):
         self.board = Board()
         self.larvaTurn = True
         self.currentAgent = self.board.getLarva()
         self.turnAI = turnAI
+        self.depth = depth
 
     def start(self):
         while True:
@@ -67,7 +68,7 @@ class Game:
             # else:
             #     root.score = min([child.score for child in children])
 
-            AlphaBetaPruning(root, 0, 999999, -999999)
+            AlphaBetaPruning(root, 0, 999999, -999999, self.depth)
             # MiniMax(root)
 
             for child in root.children:

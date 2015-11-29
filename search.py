@@ -7,7 +7,6 @@ from util import getValue
 """
 All search algorithms.
 """
-MAXDEPTH = 6
 
 class Node:
     numberOfNodes = 0
@@ -119,7 +118,7 @@ class Node:
         return True
 
 
-def MiniMax(node):
+def MiniMax(node, maxDepth):
     """
     Implementation of the minimax algorithm
     """
@@ -129,7 +128,7 @@ def MiniMax(node):
         node.evaluateScore()
         return
 
-    if node.depth != MAXDEPTH - 1:
+    if node.depth != maxDepth - 1:
         for child in node.children:
             MiniMax(child)
     else:
@@ -144,13 +143,13 @@ def MiniMax(node):
     else:
         node.score = node.evaluateScore()
 
-def AlphaBetaPruning(node, depth, alpha, beta):
+def AlphaBetaPruning(node, depth, alpha, beta, maxDepth):
 
     if node.agents[0][0] == 7:
         node.score = 999999
         return node.score
 
-    if depth == MAXDEPTH:
+    if depth == maxDepth:
         node.evaluateScore()
         return node.score
 
@@ -164,7 +163,7 @@ def AlphaBetaPruning(node, depth, alpha, beta):
     if node.isMax:
         value = -999999
         for child in children:
-            value = max(value, AlphaBetaPruning(child, depth + 1, alpha, beta))
+            value = max(value, AlphaBetaPruning(child, depth + 1, alpha, beta, maxDepth))
             beta = max(value, beta)
             if beta >= alpha:
                 break
@@ -173,7 +172,7 @@ def AlphaBetaPruning(node, depth, alpha, beta):
     else:
         value = 999999
         for child in children:
-            value = min(value, AlphaBetaPruning(child, depth + 1, alpha, beta))
+            value = min(value, AlphaBetaPruning(child, depth + 1, alpha, beta, maxDepth))
             alpha = min(value, alpha)
             if beta >= alpha:
                 break
