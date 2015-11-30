@@ -69,7 +69,7 @@ class Node:
         raise Exception("Invalid execution!!!")
 
     def evaluateScore(self):
-        self.score = self.naiveHeuristic()
+        self.score = self.smallestDistanceHeuristic()
 
     def naiveHeuristic(self):
         value = 0
@@ -80,6 +80,24 @@ class Node:
             else:
                 value -= getValue(x, y)
         return value
+
+    def maxPositionHeuristic(self):
+        value = 0
+        x = self.agents[0][0]
+        y = self.agents[0][1]
+        if not [x - 1, y + 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y + 1 <= 7:
+            value += 10
+        if not [x - 1, y - 1] in self.agents and 0 <= x - 1 <= 7 and  0 <= y - 1 <= 7:
+            value += 10
+        if not [x + 1, y + 1] in self.agents and 0 <= x + 1 <= 7 and  0 <= y + 1 <= 7:
+            value += 10
+        if not [x + 1, y - 1] in self.agents and 0 <= x + 1 <= 7 and  0 <= y - 1 <= 7:
+            value += 10
+
+        return value
+
+    def smallestDistanceHeuristic(self):
+        return self.agents[0][0]
 
     def returnMinChildScore(self):
         mini = self.children[0].score
