@@ -47,7 +47,7 @@ class Game:
             agents = []
             for agent in self.board.agents:
                 agents.append([agent.coordinates.x, agent.coordinates.y])
-            root = Node(agents, None, self.larvaTurn, 0)
+            root = Node(agents, None, self.larvaTurn, 0, self.larvaTurn)
 
             # jobs = []
             # que = multiprocessing.Queue()
@@ -95,7 +95,7 @@ class Game:
             print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
-            self.turnAI = False
+            self.turnAI = True
         else:
             while True:  # Loop until valid move
                 try:

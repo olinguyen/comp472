@@ -10,13 +10,14 @@ All search algorithms.
 
 class Node:
     numberOfNodes = 0
-    def __init__(self, agents, parent, isMax, depth):
+    def __init__(self, agents, parent, isMax, depth, isLarva):
         self.score = None
         self.parent = parent
         self.children = []
         self.depth = depth
         self.isMax = isMax
         self.agents = agents
+        self.isLarva = isLarva
         Node.numberOfNodes += 1
 
     def generateChildren(self):
@@ -31,13 +32,13 @@ class Node:
             for move in validMoves[0]:
                 copyAgent = self.agents[:]
                 copyAgent[0] = move
-                self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
+                self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1,self.isLarva))
         else:
             for i in range(4):
                 for move in validMoves[i]:
                     copyAgent = self.agents[:]
                     copyAgent[i+1] = move
-                    self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1))
+                    self.children.append(Node(copyAgent, self, not self.isMax, self.depth+1,self.isLarva))
 
     def GetValidMovesForAll(self, agents):
         """ Returns all valid moves for Larva or for each Bird """
@@ -69,7 +70,10 @@ class Node:
         raise Exception("Invalid execution!!!")
 
     def evaluateScore(self):
-        self.score = self.smallestDistanceHeuristic()
+        if self.isLarva:
+            self.score = self.smallestDistanceHeuristic()
+        else:
+            self.score = self.naiveHeuristic()
 
     def naiveHeuristic(self):
         value = 0
