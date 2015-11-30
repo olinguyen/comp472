@@ -38,9 +38,9 @@ class Game:
             """
             AI makes a move
             """
-            # import cProfile, pstats, StringIO
-            # pr = cProfile.Profile()
-            # pr.enable()
+            import cProfile, pstats, StringIO
+            pr = cProfile.Profile()
+            pr.enable()
 
             t1 = time.time()
 
@@ -78,12 +78,12 @@ class Game:
             src_coordinates, dst_coordinates = root.getBestMove()
             t2 = time.time()
 
-            # pr.disable()
-            # s = StringIO.StringIO()
-            # sortby = 'cumulative'
-            # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-            # ps.print_stats()
-            # print s.getvalue()
+            pr.disable()
+            s = StringIO.StringIO()
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            ps.print_stats()
+            print s.getvalue()
 
             print "AI made a move in", t2 - t1, "seconds"
 
@@ -95,7 +95,7 @@ class Game:
             print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
-            self.turnAI = False
+            self.turnAI = True
         else:
             while True:  # Loop until valid move
                 try:

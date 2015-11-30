@@ -129,7 +129,7 @@ class Node:
         # Compute variance
         variance = 0.0
         for x in values:
-            variance += pow(x - mean, 2)
+            variance += (x - mean) * (x - mean)
         variance = variance / float(count)
         return variance
 
@@ -168,6 +168,9 @@ class Node:
             if not child.score:
                 return False
         return True
+
+    def getUnofficialNodeScore(self):
+        return self.masterHeuristic()
 
 
 def MiniMax(node, maxDepth):
@@ -211,6 +214,8 @@ def AlphaBetaPruning(node, depth, alpha, beta, maxDepth):
     if not children:
         node.evaluateScore()
         return node.score
+
+    children.sort( key=lambda x: x.getUnofficialNodeScore(), reverse=node.isMax)
 
     if node.isMax:
         value = -999999
