@@ -150,10 +150,12 @@ class Node:
     def getBestMove(self):
         childNumber = 1
         for child in self.children:
+            """
             print "For child ", childNumber, ": "
             print self.agents
             print child.agents
             print
+            """
             childNumber += 1
             if child.score == self.score:
                 for i in range(5):
@@ -201,7 +203,7 @@ def MiniMax(node, maxDepth):
 def AlphaBetaPruning(node, depth, alpha, beta, maxDepth):
 
     if node.agents[0][0] == 7:
-        node.score = 999999
+        node.score = 999999 - node.depth
         return node.score
 
     if depth == maxDepth:

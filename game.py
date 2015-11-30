@@ -6,16 +6,17 @@ from agent import *
 from board import Board
 from copy import deepcopy
 from search import *
-import multiprocessing
 import time
 
 class Game:
-    def __init__(self, turnAI=False, depth=6):
+    def __init__(self, turnAI=False, depth=10):
         self.board = Board()
         self.larvaTurn = True
         self.currentAgent = self.board.getLarva()
         self.turnAI = turnAI
         self.depth = depth
+        self.round = 0
+        self.timing = []
 
     def start(self):
         while True:
@@ -29,6 +30,9 @@ class Game:
         self.end()
 
     def playRound(self):
+        self.round += 1
+        print "Round:", self.round
+
         if self.larvaTurn:
             print "Larva turn"
         else:
@@ -38,9 +42,11 @@ class Game:
             """
             AI makes a move
             """
+            """
             import cProfile, pstats, StringIO
             pr = cProfile.Profile()
             pr.enable()
+            """
 
             t1 = time.time()
 
@@ -49,43 +55,23 @@ class Game:
                 agents.append([agent.coordinates.x, agent.coordinates.y])
             root = Node(agents, None, self.larvaTurn, 0, self.larvaTurn)
 
-            # jobs = []
-            # que = multiprocessing.Queue()
-            # root.generateChildren()
-            # children = root.children
-            #
-            # for child in children:
-            #     p = multiprocessing.Process(target=AlphaBetaPruning, args=(child, 1, 999999, -999999,))
-            #     jobs.append(p)
-            #     p.start()
-            # for p in jobs:
-            #     p.join()
-            #
-            # print [child.score for child in children]
-            #
-            # if root.isMax:
-            #     root.score = max([child.score for child in children])
-            # else:
-            #     root.score = min([child.score for child in children])
 
             AlphaBetaPruning(root, 0, 999999, -999999, self.depth)
-            # MiniMax(root)
-
-            for child in root.children:
-                print child.score,
-            print
 
             src_coordinates, dst_coordinates = root.getBestMove()
             t2 = time.time()
 
+            """
             pr.disable()
             s = StringIO.StringIO()
             sortby = 'cumulative'
             ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
             ps.print_stats()
             print s.getvalue()
+            """
 
             print "AI made a move in", t2 - t1, "seconds"
+            self.timing.append(t2-t1)
 
             printIndex(src_coordinates)
             print '->',
@@ -95,7 +81,7 @@ class Game:
             print "Root node score:", root.score
             self.currentAgent = self.board.findAgent(src_coordinates)
             self.currentAgent.move(dst_coordinates)
-            self.turnAI = True
+            self.turnAI = False
         else:
             while True:  # Loop until valid move
                 try:
@@ -176,6 +162,11 @@ class Game:
         else:
             print "Game Over! Larva wins"
         print "Thank you for playing!"
+        """
+        f = open("timing.txt", "w")
+        for line in self.timing:
+            f.write(str(line) + '\n')
+        """
 
     def isNoRemainingMoves(self, isLarvaTurn):
         noMoreMoves = True

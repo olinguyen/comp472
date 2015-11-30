@@ -9,7 +9,6 @@ import time
 import random
 import os
 from game import Game
-import argparse
 from optparse import OptionParser
 
 
@@ -30,7 +29,7 @@ if __name__ == '__main__':
 	parser = OptionParser()
 	parser.add_option('-l', '--larva_ai', action='store_true', default=False,
 						 help='Set AI player. e.g. -ai bird')
-	parser.add_option('-d', '--depth', type="int", default=6,
+	parser.add_option('-d', '--depth', type="int", default=10,
 						 help='Max depth that the minimax algorithm will go')
 	(options, args) = parser.parse_args()
 	depth = options.depth
