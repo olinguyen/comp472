@@ -70,10 +70,11 @@ class Node:
         raise Exception("Invalid execution!!!")
 
     def evaluateScore(self):
-        if self.isLarva:
-            self.score = self.smallestDistanceHeuristic()
-        else:
-            self.score = self.naiveHeuristic()
+        # if self.isLarva:
+        #     self.score = self.naiveHeuristic()
+        # else:
+        #     self.score = self.masterHeuristic()
+        self.score = self.masterHeuristic()
 
     def naiveHeuristic(self):
         value = 0
@@ -97,11 +98,40 @@ class Node:
             value += 10
         if not [x + 1, y - 1] in self.agents and 0 <= x + 1 <= 7 and  0 <= y - 1 <= 7:
             value += 10
-
         return value
 
     def smallestDistanceHeuristic(self):
         return self.agents[0][0]
+
+    def masterHeuristic(self):
+        xlarva = self.agents[0][0]
+        ylarva = self.agents[0][1]
+        xBirds = []
+        w1 = 1
+        w2 = 3
+        w3 = 1
+        # Keep all birds above larva
+        v1 = 0
+        for i in range(1, len(self.agents) - 1):
+            v1 += xlarva - self.agents[i][0]
+            xBirds.append(self.agents[i][0])
+        # big variance on x axis beneficial for larva
+        v2 = self.calculateVariance(xBirds)
+        # Larva is as close as possible to rank 1
+        v3 = xlarva
+        # print v1, v2, v3
+        return w1*v1 + w2*v2 + w2*v3
+
+    def calculateVariance(self, values):
+        # Find mean
+        count = len(values)
+        mean = sum(values)/float(count)
+        # Compute variance
+        variance = 0.0
+        for x in values:
+            variance += pow(x - mean, 2)
+        variance = variance / float(count)
+        return variance
 
     def returnMinChildScore(self):
         mini = self.children[0].score
