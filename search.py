@@ -108,8 +108,9 @@ class Node:
         ylarva = self.agents[0][1]
         xBirds = []
         w1 = 1
-        w2 = 3
+        w2 = 8
         w3 = 1
+        w4 = 2
         # Keep all birds above larva
         v1 = 0
         for i in range(1, len(self.agents) - 1):
@@ -119,8 +120,10 @@ class Node:
         v2 = self.calculateVariance(xBirds)
         # Larva is as close as possible to rank 1
         v3 = xlarva
-        # print v1, v2, v3
-        return w1*v1 + w2*v2 + w2*v3
+        # Eliminate outliers
+        v4 = sum(xBirds)/float(len(xBirds)) - min(xBirds)
+        # print v1, v2, v3, v4
+        return w1*v1 + w2*v2 + w2*v3 + w4*v4
 
     def calculateVariance(self, values):
         # Find mean
@@ -202,8 +205,26 @@ def MiniMax(node, maxDepth):
 
 def AlphaBetaPruning(node, depth, alpha, beta, maxDepth):
 
+    # Larva wins
     if node.agents[0][0] == 7:
         node.score = 999999 - node.depth
+        return node.score
+
+    # Birds win
+    hasNoMoves = True
+    x = node.agents[0][0]
+    y = node.agents[0][1]
+    if not [x - 1, y + 1] in node.agents and 0 <= x - 1 <= 7 and  0 <= y + 1 <= 7:
+        hasNoMoves = False
+    if not [x - 1, y - 1] in node.agents and 0 <= x - 1 <= 7 and  0 <= y - 1 <= 7:
+        hasNoMoves = False
+    if not [x + 1, y + 1] in node.agents and 0 <= x + 1 <= 7 and  0 <= y + 1 <= 7:
+        hasNoMoves = False
+    if not [x + 1, y - 1] in node.agents and 0 <= x + 1 <= 7 and  0 <= y - 1 <= 7:
+        hasNoMoves = False
+
+    if hasNoMoves:
+        node.score = -999999 + node.depth
         return node.score
 
     if depth == maxDepth:
